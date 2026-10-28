@@ -41,7 +41,13 @@ export async function createActivity(input: unknown) {
 }
 
 export async function listTeams() {
-  return Team.find().lean();
+  const teams = await Team.find().lean();
+  const users = await User.find({ _id: { $in: teams.flatMap((team) => team.members) } }).select('name').lean();
+  const namesById = new Map(users.map((user) => [user._id.toString(), user.name]));
+  return teams.map((team) => ({
+    ...team,
+    memberNames: team.members.map((id) => namesById.get(id.toString())).filter((name): name is string => Boolean(name)),
+  }));
 }
 
 export async function createTeam(input: unknown) {

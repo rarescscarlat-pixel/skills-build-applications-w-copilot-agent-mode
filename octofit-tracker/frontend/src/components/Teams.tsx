@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getJson } from '../api/client.js';
 
-type Team = { name: string; members?: string[] };
+type Team = { name: string; members?: string[]; memberNames?: string[] };
 type State = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready'; teams: Team[] };
 
 export default function Teams() {
@@ -25,7 +25,7 @@ export default function Teams() {
         {state.status === 'ready' && state.teams.length === 0 && <p>No teams created yet.</p>}
         {state.status === 'ready' && state.teams.length > 0 && (
           <ul className="list-group">
-            {state.teams.map((t, index) => <li key={index} className="list-group-item">{t.members?.length ? `${t.name}: ${t.members.join(', ')}` : t.name}</li>)}
+            {state.teams.map((t, index) => { const names = t.memberNames ?? t.members ?? []; return <li key={index} className="list-group-item">{names.length ? `${t.name}: ${names.join(', ')}` : t.name}</li>; })}
           </ul>
         )}
       </div>
